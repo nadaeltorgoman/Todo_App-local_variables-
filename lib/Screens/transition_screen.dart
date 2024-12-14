@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'home_screen.dart'; // Replace with the actual path to your next screen
+import 'home_screen.dart'; 
 
 class TransitionScreen extends StatefulWidget {
   const TransitionScreen({super.key});

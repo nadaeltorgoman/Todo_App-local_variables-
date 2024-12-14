@@ -64,7 +64,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: ColorsPalette.scafoldColor,
+        backgroundColor: ColorsPalette.scaffoldColor,
         body: SingleChildScrollView(
             child: Padding(
           padding: const EdgeInsets.all(12.0),
