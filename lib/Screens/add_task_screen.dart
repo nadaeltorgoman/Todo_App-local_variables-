@@ -219,14 +219,19 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           LocalVariablesDatabase().categoriesList[0].data.add(
                               TaskModel(title: taskNameController.text, body: taskDescriptionController.text, color: _selectedColor!, date: taskDateController.text, time: taskTimeController.text));
                           if (widget.editedTask != null) {
-                            LocalVariablesDatabase().categoriesList[0].data.remove(widget.editedTask);
+                            LocalVariablesDatabase()
+                                .categoriesList[0]
+                                .data
+                                .remove(widget.editedTask);
                           }
 
                           Navigator.pushAndRemoveUntil(context, MaterialPageRoute<void>(builder: (BuildContext context) => const HomeScreen()), ModalRoute.withName('//'));
                         }
                       }
                     },
-                    child: Text(widget.editedTask != null ? 'Edit the task' : 'Add the task')),
+                    child: Text(widget.editedTask != null
+                        ? 'Edit the task'
+                        : 'Add the task')),
               ],
             ),
           ),
