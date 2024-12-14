@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'package:todo_app/Data/Data_sources/local_variables_database.dart';
+import 'package:todo_app/Data/model/task_model.dart';
+
 import '../Resources/color_pallete.dart';
 import '../Resources/icons.dart';
 import '../Resources/text_style.dart';
+import 'home_screen.dart';
 
 class AddTaskScreen extends StatefulWidget {
-  const AddTaskScreen({super.key});
+  TaskModel? editedTask;
+  AddTaskScreen({super.key, this.editedTask});
 
   @override
   State<AddTaskScreen> createState() => _AddTaskScreenState();
@@ -33,11 +38,25 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   bool? selectedColorError;
   final TextEditingController taskNameController = TextEditingController();
-  final TextEditingController taskDiscriptionController =
-      TextEditingController();
+  final TextEditingController taskDescriptionController = TextEditingController();
   final TextEditingController taskDateController = TextEditingController();
   final TextEditingController taskTimeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (widget.editedTask != null) {
+      // edit task case
+      taskNameController.text = widget.editedTask!.title;
+      taskDescriptionController.text = widget.editedTask!.body;
+      taskDateController.text = widget.editedTask!.date;
+      taskTimeController.text = widget.editedTask!.time;
+      _selectedColor = widget.editedTask!.color;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -60,9 +79,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   onTap: () {
                     Navigator.pop(context);
                   },
-                  child: Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: Image.asset(closeIcon)),
+                  child: Align(alignment: AlignmentDirectional.centerEnd, child: Image.asset(closeIcon)),
                 ),
                 Image.asset(starIcon),
                 const Text('New Task'),
@@ -76,18 +93,20 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     if (value!.isEmpty) {
                       return 'Task name cant be empty';
                     }
+                    return null;
                   },
                 ),
                 const SizedBox(
                   height: 12,
                 ),
                 TextFormField(
-                    controller: taskDiscriptionController,
+                    controller: taskDescriptionController,
                     decoration: const InputDecoration(hintText: 'Describe it'),
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Task description cant be empty';
                       }
+                      return null;
                     }),
                 const SizedBox(
                   height: 32,
@@ -96,8 +115,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   alignment: AlignmentDirectional.centerStart,
                   child: Text(
                     'Card color',
-                    style: AppTextStyles.bodyMedium
-                        .copyWith(fontWeight: FontWeight.bold),
+                    style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
                 SingleChildScrollView(
@@ -117,11 +135,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             width: 32,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(100),
-                                border: Border.all(
-                                    color: _selectedColor == cardsColors[i]
-                                        ? ColorsPalette.whiteColor
-                                        : Colors.transparent,
-                                    width: 4),
+                                border: Border.all(color: _selectedColor == cardsColors[i] ? ColorsPalette.whiteColor : Colors.transparent, width: 4),
                                 color: cardsColors[i]),
                           ),
                         )
@@ -133,8 +147,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     alignment: AlignmentDirectional.centerStart,
                     child: Text(
                       'Color cant be empty',
-                      style:
-                          AppTextStyles.bodySmall.copyWith(color: Colors.red),
+                      style: AppTextStyles.bodySmall.copyWith(color: Colors.red),
                     ),
                   ),
                 const SizedBox(
@@ -146,25 +159,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       child: InkWell(
                         onTap: () async {
                           DateTime? selectedDate;
-                          selectedDate = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime.now(),
-                              lastDate: DateTime.now().add(const Duration(days: 7)));
+                          selectedDate = await showDatePicker(context: context, firstDate: DateTime.now(), lastDate: DateTime.now().add(const Duration(days: 7)));
 
                           if (selectedDate != null) {
-                            taskDateController.text =
-                                DateFormat('dd/MM').format(selectedDate);
+                            taskDateController.text = DateFormat('dd/MM').format(selectedDate);
                           }
                         },
                         child: TextFormField(
                             controller: taskDateController,
                             enabled: false,
-                            decoration:
-                                const InputDecoration(hintText: 'Select Date'),
+                            decoration: const InputDecoration(hintText: 'Select Date'),
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'Date cant be empty';
                               }
+                              return null;
                             }),
                       ),
                     ),
@@ -175,23 +184,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       child: InkWell(
                         onTap: () async {
                           TimeOfDay? selectedTime;
-                          selectedTime = await showTimePicker(
-                              context: context, initialTime: TimeOfDay.now());
+                          selectedTime = await showTimePicker(context: context, initialTime: TimeOfDay.now());
 
                           if (selectedTime != null) {
-                            taskTimeController.text =
-                                selectedTime.format(context);
+                            taskTimeController.text = selectedTime.format(context);
                           }
                         },
                         child: TextFormField(
                             controller: taskTimeController,
                             enabled: false,
-                            decoration:
-                                const InputDecoration(hintText: 'Select Time'),
+                            decoration: const InputDecoration(hintText: 'Select Time'),
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'Time cant be empty';
                               }
+                              return null;
                             }),
                       ),
                     ),
@@ -210,23 +217,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         } else {
                           selectedColorError = false;
                           LocalVariablesDatabase().categoriesList[0].data.add(
-                              TaskModel(
-                                  title: taskNameController.text,
-                                  body: taskDiscriptionController.text,
-                                  color: _selectedColor!,
-                                  date: taskDateController.text,
-                                  time: taskTimeController.text));
+                              TaskModel(title: taskNameController.text, body: taskDescriptionController.text, color: _selectedColor!, date: taskDateController.text, time: taskTimeController.text));
+                          if (widget.editedTask != null) {
+                            LocalVariablesDatabase().categoriesList[0].data.remove(widget.editedTask);
+                          }
 
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute<void>(
-                                  builder: (BuildContext context) =>
-                                      const HomeScreen()),
-                              ModalRoute.withName('//'));
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute<void>(builder: (BuildContext context) => const HomeScreen()), ModalRoute.withName('//'));
                         }
                       }
                     },
-                    child: const Text('Add the task'))
+                    child: Text(widget.editedTask != null ? 'Edit the task' : 'Add the task')),
               ],
             ),
           ),
