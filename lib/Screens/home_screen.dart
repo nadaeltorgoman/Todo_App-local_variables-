@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/Screens/home_body.dart';
+import 'package:todo_app/Screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,7 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     Center(child: HomeBody()),
-    Center(child: Text('Profile Screen')),
+    Center(child: ProfileScreen()),
   ];
 
   void _onItemTapped(int index) {
@@ -21,24 +22,27 @@ class _HomeScreenState extends State<HomeScreen> {
       _selectedIndex = index;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today_outlined),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label: '',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-        ),
+        elevation: 20,
+        selectedIconTheme: const IconThemeData(color: Colors.black),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month_outlined),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_rounded),
+            label: '',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }

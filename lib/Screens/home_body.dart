@@ -56,77 +56,79 @@ class _HomeBodyState extends State<HomeBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-          children: [
-            // date filter
-            Container(
-              decoration: BoxDecoration(
-                color: ColorsPalette.secondaryColor.withOpacity(0.3),
-              ),
-              height: 180,
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.all(22),
-                  child: Column(
-                    children: [
-                      Text('Today', style: AppTextStyles.bodyMedium.copyWith(fontSize: 32)),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: weekDates.mapIndexed((index, val) {
-                            return _dateCard(dateObject: val, index: index);
-                          }).toList()),
-                    ],
-                  ),
+      body: Column(
+        children: [
+          // date filter
+          Container(
+            decoration: BoxDecoration(
+              color: ColorsPalette.secondaryColor.withOpacity(0.3),
+            ),
+            height: 180,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(22),
+                child: Column(
+                  children: [
+                    Text('Today', style: AppTextStyles.bodyMedium.copyWith(fontSize: 32)),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: weekDates.mapIndexed((index, val) {
+                          return _dateCard(dateObject: val, index: index);
+                        }).toList()),
+                  ],
                 ),
               ),
             ),
+          ),
 
-            const SizedBox(
-              height: 16,
+          const SizedBox(
+            height: 16,
+          ),
+
+          // category filter
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: LocalVariablesDatabase().categoriesList.mapIndexed(
+              (index, element) {
+                return categoryCard(index: index, category: element);
+              },
+            ).toList(),
+          ),
+
+          // place holder
+
+          Expanded(
+              child: ListView.builder(
+                  itemCount: LocalVariablesDatabase().categoriesList[_selectedCategoryIndex].data.isEmpty ? 1 : LocalVariablesDatabase().categoriesList[_selectedCategoryIndex].data.length,
+                  itemBuilder: (context, index) {
+                    List<TaskModel> myDate = LocalVariablesDatabase().categoriesList[_selectedCategoryIndex].data;
+
+                    return myDate.isEmpty
+                        ? Center(
+                            child: SvgPicture.asset(emptyIcon),
+                          )
+                        : _taskCard(taskModel: myDate[index], context: context, currentTaskIndex: index);
+                  }))
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        shape: const CircleBorder(),
+        backgroundColor: ColorsPalette.whiteColor,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (BuildContext context) => AddTaskScreen(),
             ),
-
-            // category filter
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: LocalVariablesDatabase().categoriesList.mapIndexed(
-                (index, element) {
-                  return categoryCard(index: index, category: element);
-                },
-              ).toList(),
-            ),
-
-            // place holder
-
-            Expanded(
-                child: ListView.builder(
-                    itemCount: LocalVariablesDatabase().categoriesList[_selectedCategoryIndex].data.isEmpty ? 1 : LocalVariablesDatabase().categoriesList[_selectedCategoryIndex].data.length,
-                    itemBuilder: (context, index) {
-                      List<TaskModel> myDate = LocalVariablesDatabase().categoriesList[_selectedCategoryIndex].data;
-
-                      return myDate.isEmpty
-                          ? Center(
-                              child: SvgPicture.asset(emptyIcon),
-                            )
-                          : _taskCard(taskModel: myDate[index], context: context, currentTaskIndex: index);
-                    }))
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          shape: const CircleBorder(),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (BuildContext context) => AddTaskScreen(),
-              ),
-            );
-          },
-          child: const Icon(Icons.add, size: 28),
-        ),);
+          );
+        },
+        child: const Icon(Icons.add, size: 28),
+      ),
+    );
   }
 
   Widget _taskCard({required TaskModel taskModel, required context, required int currentTaskIndex}) {
